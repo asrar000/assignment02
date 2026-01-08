@@ -571,6 +571,285 @@ function initializeCheckAvailability() {
     });
 }
 
+// ============================================
+// FAVORITES SECTION WITH LOCAL STORAGE
+// ============================================
+
+// Property data - 10 properties with unique IDs and images
+const properties = [
+    {
+        id: 'property1',
+        name: 'Beachfront Villa Paradise',
+        location: 'Miami, Florida',
+        guests: 6,
+        bedrooms: 3,
+        price: 345,
+        image: 'assets/image11.jpg',
+        rating: 4.8
+    },
+    {
+        id: 'property2',
+        name: 'Mountain View Chalet',
+        location: 'Aspen, Colorado',
+        guests: 4,
+        bedrooms: 2,
+        price: 285,
+        image: 'assets/image12.jpg',
+        rating: 4.9
+    },
+    {
+        id: 'property3',
+        name: 'City Center Penthouse',
+        location: 'New York City',
+        guests: 2,
+        bedrooms: 1,
+        price: 420,
+        image: 'assets/image13.jpg',
+        rating: 4.7
+    },
+    {
+        id: 'property4',
+        name: 'Lakeside Cottage',
+        location: 'Lake Tahoe, California',
+        guests: 5,
+        bedrooms: 2,
+        price: 320,
+        image: 'assets/image14.jpg',
+        rating: 4.6
+    },
+    {
+        id: 'property5',
+        name: 'Desert Oasis Retreat',
+        location: 'Scottsdale, Arizona',
+        guests: 8,
+        bedrooms: 4,
+        price: 510,
+        image: 'assets/image15.jpg',
+        rating: 4.5
+    },
+    {
+        id: 'property6',
+        name: 'Historic Townhouse',
+        location: 'Charleston, South Carolina',
+        guests: 7,
+        bedrooms: 3,
+        price: 380,
+        image: 'assets/image16.jpg',
+        rating: 4.8
+    },
+    {
+        id: 'property7',
+        name: 'Modern Loft Apartment',
+        location: 'Austin, Texas',
+        guests: 3,
+        bedrooms: 1,
+        price: 275,
+        image: 'assets/image17.jpg',
+        rating: 4.7
+    },
+    {
+        id: 'property8',
+        name: 'Ski-in Ski-out Condo',
+        location: 'Park City, Utah',
+        guests: 6,
+        bedrooms: 3,
+        price: 460,
+        image: 'assets/image18.jpg',
+        rating: 4.9
+    },
+    {
+        id: 'property9',
+        name: 'Tropical Garden Bungalow',
+        location: 'Kauai, Hawaii',
+        guests: 4,
+        bedrooms: 2,
+        price: 395,
+        image: 'assets/image19.jpg',
+        rating: 4.8
+    },
+    {
+        id: 'property10',
+        name: 'Vineyard Estate',
+        location: 'Napa Valley, California',
+        guests: 10,
+        bedrooms: 5,
+        price: 890,
+        image: 'assets/image20.jpg',
+        rating: 4.9
+    }
+];
+
+// Local Storage Key
+const FAVORITES_KEY = 'favoriteProperties';
+
+// Get favorites from local storage
+function getFavorites() {
+    const favorites = localStorage.getItem(FAVORITES_KEY);
+    return favorites ? JSON.parse(favorites) : [];
+}
+
+// Save favorites to local storage
+function saveFavorites(favorites) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+}
+
+// Check if a property is favorited
+function isPropertyFavorited(propertyId) {
+    const favorites = getFavorites();
+    return favorites.includes(propertyId);
+}
+
+// Toggle favorite status
+function toggleFavorite(propertyId) {
+    let favorites = getFavorites();
+    
+    if (favorites.includes(propertyId)) {
+        // Remove from favorites
+        favorites = favorites.filter(id => id !== propertyId);
+    } else {
+        // Add to favorites
+        favorites.push(propertyId);
+    }
+    
+    saveFavorites(favorites);
+    updateFavoriteButton(propertyId);
+    return favorites.includes(propertyId);
+}
+
+// Update favorite button appearance
+function updateFavoriteButton(propertyId) {
+    const button = document.querySelector(`[data-property-id="${propertyId}"]`);
+    if (button) {
+        const icon = button.querySelector('.favorite-card__favorite-icon');
+        const isFavorited = isPropertyFavorited(propertyId);
+        
+        if (isFavorited) {
+            button.classList.add('active');
+            icon.style.color = '#ff4757';
+        } else {
+            button.classList.remove('active');
+            icon.style.color = '#ccc';
+        }
+    }
+}
+
+// Create property card HTML
+function createPropertyCard(property) {
+    const isFavorited = isPropertyFavorited(property.id);
+    
+    return `
+        <div class="favorite-card" data-property="${property.id}">
+            <div class="favorite-card__image-container">
+                <img src="${property.image}" alt="${property.name}" class="favorite-card__image">
+                <button class="favorite-card__favorite-btn ${isFavorited ? 'active' : ''}" 
+                        data-property-id="${property.id}"
+                        aria-label="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
+                    <i class="fas fa-heart favorite-card__favorite-icon"></i>
+                </button>
+                <div class="favorite-card__rating">
+                    <i class="fas fa-star"></i> ${property.rating}
+                </div>
+            </div>
+            
+            <div class="favorite-card__content">
+                <h3 class="favorite-card__title">${property.name}</h3>
+                <div class="favorite-card__location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    ${property.location}
+                </div>
+                
+                <div class="favorite-card__details">
+                    <div class="favorite-card__guests">
+                        <i class="fas fa-user-friends"></i>
+                        ${property.guests} Guests
+                    </div>
+                    <div class="favorite-card__bedrooms">
+                        <i class="fas fa-bed"></i>
+                        ${property.bedrooms} Bedrooms
+                    </div>
+                </div>
+                
+                <div class="favorite-card__price">
+                    $${property.price} <span>/ night</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Render properties grid
+function renderPropertiesGrid() {
+    const grid = document.getElementById('favoritesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = properties.map(property => createPropertyCard(property)).join('');
+    
+    // Add event listeners to all favorite buttons
+    document.querySelectorAll('.favorite-card__favorite-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const propertyId = this.getAttribute('data-property-id');
+            const isNowFavorited = toggleFavorite(propertyId);
+            
+            // Update button text for accessibility
+            this.setAttribute('aria-label', isNowFavorited ? 'Remove from favorites' : 'Add to favorites');
+            
+            // Add visual feedback
+            this.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Log for debugging
+            console.log(`Property ${propertyId} ${isNowFavorited ? 'added to' : 'removed from'} favorites`);
+            console.log('Current favorites:', getFavorites());
+        });
+    });
+    
+    // Add click event to property cards (for future navigation)
+    document.querySelectorAll('.favorite-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Don't trigger if clicking the favorite button
+            if (!e.target.closest('.favorite-card__favorite-btn')) {
+                const propertyId = this.getAttribute('data-property');
+                console.log(`Navigating to ${propertyId} details page`);
+                // In a real application, this would navigate to the property detail page
+                // window.location.href = `/property/${propertyId}`;
+            }
+        });
+    });
+}
+
+// Initialize favorites section
+function initializeFavoritesSection() {
+    renderPropertiesGrid();
+    
+    // Clear favorites button for testing (optional - remove in production)
+    const clearButton = document.createElement('button');
+    clearButton.textContent = 'Clear Favorites (Dev)';
+    clearButton.style.cssText = `
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #ff4757;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    `;
+    clearButton.addEventListener('click', () => {
+        localStorage.removeItem(FAVORITES_KEY);
+        renderPropertiesGrid();
+        console.log('Favorites cleared');
+    });
+    
+    // Only add in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        document.querySelector('.favorites-section .container').appendChild(clearButton);
+    }
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize property description toggle
@@ -589,6 +868,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateGuestDisplay();
         updatePricing();
     }
+    
+    // Initialize favorites section
+    initializeFavoritesSection();
     
     // Update on window resize
     window.addEventListener('resize', () => {
@@ -614,3 +896,6 @@ console.log('Guest/Infant/Pet counts do NOT affect pricing');
 console.log('Example: 1 night = $2026, 2 nights = $4052, 3 nights = $6078');
 console.log('Guest limits: Guests (min 1, no max), Infants (min 0, no max), Pets (min 0, no max)');
 console.log('Today: ' + TODAY.toDateString());
+console.log('Favorites system initialized');
+console.log('Current favorites:', getFavorites());
+console.log('Total properties available:', properties.length);
