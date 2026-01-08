@@ -139,12 +139,12 @@ viewAllBtn.addEventListener('click', () => {
     modal.classList.add('active');
     createThumbnails();
     showImage(0);
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
 });
 
 closeModal.addEventListener('click', () => {
     modal.classList.remove('active');
-    document.body.style.overflow = ''; // Restore scrolling
+    document.body.style.overflow = '';
 });
 
 nextBtn.addEventListener('click', showNextImage);
@@ -186,13 +186,11 @@ function toggleDescription() {
     isExpanded = !isExpanded;
     
     if (isExpanded) {
-        // Expand the description
         descriptionText.classList.remove('property-description__text--collapsed');
         descriptionText.classList.add('property-description__text--expanded');
         toggleText.textContent = 'SHOW LESS';
         toggleBtn.classList.add('expanded');
     } else {
-        // Collapse the description
         descriptionText.classList.remove('property-description__text--expanded');
         descriptionText.classList.add('property-description__text--collapsed');
         toggleText.textContent = 'SHOW MORE';
@@ -201,7 +199,9 @@ function toggleDescription() {
 }
 
 // Add event listener to the toggle button
-toggleBtn.addEventListener('click', toggleDescription);
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleDescription);
+}
 
 // ============================================
 // BOOKING FUNCTIONALITY
@@ -219,7 +219,6 @@ const guestSelector = document.getElementById('guestSelector');
 const guestDisplay = document.getElementById('guestDisplay');
 const totalPriceElement = document.getElementById('totalPrice');
 const pricePerNightElement = document.getElementById('pricePerNight');
-const nightsCountElement = document.getElementById('nightsCount');
 const calculatedTotalElement = document.getElementById('calculatedTotal');
 const availabilityText = document.getElementById('availabilityText');
 const checkAvailabilityBtn = document.getElementById('checkAvailabilityBtn');
@@ -305,11 +304,13 @@ function formatGuestText(guests, infants, pets) {
 
 // Update guest display
 function updateGuestDisplay() {
-    guestDisplay.textContent = formatGuestText(
-        guestState.guests, 
-        guestState.infants, 
-        guestState.pets
-    );
+    if (guestDisplay) {
+        guestDisplay.textContent = formatGuestText(
+            guestState.guests, 
+            guestState.infants, 
+            guestState.pets
+        );
+    }
     
     // Update counter buttons state
     updateCounterButtons();
@@ -317,49 +318,54 @@ function updateGuestDisplay() {
 
 // Update counter buttons state
 function updateCounterButtons() {
-    // Guests: minimum 1, maximum 8
-    decreaseGuestsBtn.disabled = guestState.guests <= 1;
-    increaseGuestsBtn.disabled = guestState.guests >= 8;
+    // Guests: minimum 1, no maximum
+    if (decreaseGuestsBtn) decreaseGuestsBtn.disabled = guestState.guests <= 1;
+    if (increaseGuestsBtn) increaseGuestsBtn.disabled = false;
     
-    // Infants: minimum 0, maximum 2
-    decreaseInfantsBtn.disabled = guestState.infants <= 0;
-    increaseInfantsBtn.disabled = guestState.infants >= 2;
+    // Infants: minimum 0, no maximum
+    if (decreaseInfantsBtn) decreaseInfantsBtn.disabled = guestState.infants <= 0;
+    if (increaseInfantsBtn) increaseInfantsBtn.disabled = false;
     
-    // Pets: minimum 0, maximum 2
-    decreasePetsBtn.disabled = guestState.pets <= 0;
-    increasePetsBtn.disabled = guestState.pets >= 2;
+    // Pets: minimum 0, no maximum
+    if (decreasePetsBtn) decreasePetsBtn.disabled = guestState.pets <= 0;
+    if (increasePetsBtn) increasePetsBtn.disabled = false;
 }
 
-// Update pricing based on selected dates
+// Update pricing based ONLY on selected dates (NOT guest counts)
 function updatePricing() {
     const nights = calculateNights(selectedDates.checkIn, selectedDates.checkOut);
     const total = nights * PRICE_PER_NIGHT;
     
     // Update display elements
-    pricePerNightElement.textContent = formatCurrency(PRICE_PER_NIGHT);
-    nightsCountElement.textContent = `${nights} night${nights !== 1 ? 's' : ''}`;
+    if (pricePerNightElement) pricePerNightElement.textContent = formatCurrency(PRICE_PER_NIGHT);
     
     if (nights > 0) {
-        calculatedTotalElement.textContent = formatCurrency(total);
-        totalPriceElement.textContent = `$${total}`;
-        availabilityText.textContent = 'Dates selected are available';
-        availabilityText.style.color = 'green';
+        if (calculatedTotalElement) calculatedTotalElement.textContent = formatCurrency(total);
+        if (totalPriceElement) totalPriceElement.textContent = `$${total.toLocaleString()}`;
+        if (availabilityText) {
+            availabilityText.textContent = 'Dates selected are available';
+            availabilityText.style.color = 'green';
+        }
     } else {
-        calculatedTotalElement.textContent = formatCurrency(PRICE_PER_NIGHT);
-        totalPriceElement.textContent = `$${PRICE_PER_NIGHT}`;
-        availabilityText.textContent = 'Select dates to check availability';
-        availabilityText.style.color = '#666';
+        if (calculatedTotalElement) calculatedTotalElement.textContent = formatCurrency(PRICE_PER_NIGHT);
+        if (totalPriceElement) totalPriceElement.textContent = `$${PRICE_PER_NIGHT.toLocaleString()}`;
+        if (availabilityText) {
+            availabilityText.textContent = 'Select dates to check availability';
+            availabilityText.style.color = '#666';
+        }
     }
 }
 
 // Initialize Flatpickr date pickers
 function initializeDatePickers() {
+    if (!checkInInput || !checkOutInput) return;
+    
     const checkInPicker = flatpickr(checkInInput, {
         dateFormat: "d M Y",
         minDate: "today",
-        onChange: function(selectedDates, dateStr, instance) {
-            if (selectedDates.length > 0) {
-                selectedDates.checkIn = selectedDates[0];
+        onChange: function(selectedDatesArray, dateStr, instance) {
+            if (selectedDatesArray.length > 0) {
+                selectedDates.checkIn = selectedDatesArray[0];
                 checkInInput.value = formatDate(selectedDates.checkIn);
                 
                 // Set min date for check-out
@@ -377,9 +383,9 @@ function initializeDatePickers() {
                 updatePricing();
             }
         },
-        onClose: function(selectedDates, dateStr, instance) {
+        onClose: function(selectedDatesArray, dateStr, instance) {
             // If check-in is selected but check-out is not, open check-out picker
-            if (selectedDates.length > 0 && !selectedDates.checkOut) {
+            if (selectedDatesArray.length > 0 && !selectedDates.checkOut) {
                 setTimeout(() => checkOutPicker.open(), 100);
             }
         }
@@ -388,9 +394,9 @@ function initializeDatePickers() {
     const checkOutPicker = flatpickr(checkOutInput, {
         dateFormat: "d M Y",
         minDate: "today",
-        onChange: function(selectedDates, dateStr, instance) {
-            if (selectedDates.length > 0) {
-                selectedDates.checkOut = selectedDates[0];
+        onChange: function(selectedDatesArray, dateStr, instance) {
+            if (selectedDatesArray.length > 0) {
+                selectedDates.checkOut = selectedDatesArray[0];
                 checkOutInput.value = formatDate(selectedDates.checkOut);
                 updatePricing();
             }
@@ -405,73 +411,83 @@ function initializeDatePickers() {
 
 // Initialize guest counter functionality
 function initializeGuestCounter() {
+    if (!guestsCountElement || !infantsCountElement || !petsCountElement) return;
+    
     // Set initial values
     guestsCountElement.textContent = guestState.guests;
     infantsCountElement.textContent = guestState.infants;
     petsCountElement.textContent = guestState.pets;
     
     // Guests counter
-    decreaseGuestsBtn.addEventListener('click', () => {
-        if (guestState.guests > 1) {
-            guestState.guests--;
-            guestsCountElement.textContent = guestState.guests;
-            updateCounterButtons();
-        }
-    });
+    if (decreaseGuestsBtn) {
+        decreaseGuestsBtn.addEventListener('click', () => {
+            if (guestState.guests > 1) {
+                guestState.guests--;
+                guestsCountElement.textContent = guestState.guests;
+                updateCounterButtons();
+            }
+        });
+    }
     
-    increaseGuestsBtn.addEventListener('click', () => {
-        if (guestState.guests < 8) {
+    if (increaseGuestsBtn) {
+        increaseGuestsBtn.addEventListener('click', () => {
             guestState.guests++;
             guestsCountElement.textContent = guestState.guests;
             updateCounterButtons();
-        }
-    });
+        });
+    }
     
     // Infants counter
-    decreaseInfantsBtn.addEventListener('click', () => {
-        if (guestState.infants > 0) {
-            guestState.infants--;
-            infantsCountElement.textContent = guestState.infants;
-            updateCounterButtons();
-        }
-    });
+    if (decreaseInfantsBtn) {
+        decreaseInfantsBtn.addEventListener('click', () => {
+            if (guestState.infants > 0) {
+                guestState.infants--;
+                infantsCountElement.textContent = guestState.infants;
+                updateCounterButtons();
+            }
+        });
+    }
     
-    increaseInfantsBtn.addEventListener('click', () => {
-        if (guestState.infants < 2) {
+    if (increaseInfantsBtn) {
+        increaseInfantsBtn.addEventListener('click', () => {
             guestState.infants++;
             infantsCountElement.textContent = guestState.infants;
             updateCounterButtons();
-        }
-    });
+        });
+    }
     
     // Pets counter
-    decreasePetsBtn.addEventListener('click', () => {
-        if (guestState.pets > 0) {
-            guestState.pets--;
-            petsCountElement.textContent = guestState.pets;
-            updateCounterButtons();
-        }
-    });
+    if (decreasePetsBtn) {
+        decreasePetsBtn.addEventListener('click', () => {
+            if (guestState.pets > 0) {
+                guestState.pets--;
+                petsCountElement.textContent = guestState.pets;
+                updateCounterButtons();
+            }
+        });
+    }
     
-    increasePetsBtn.addEventListener('click', () => {
-        if (guestState.pets < 2) {
+    if (increasePetsBtn) {
+        increasePetsBtn.addEventListener('click', () => {
             guestState.pets++;
             petsCountElement.textContent = guestState.pets;
             updateCounterButtons();
-        }
-    });
+        });
+    }
 }
 
 // Guest modal functionality
 function initializeGuestModal() {
+    if (!guestSelector || !guestModal) return;
+    
     // Open modal when guest selector is clicked
     guestSelector.addEventListener('click', (e) => {
         // Only open on desktop (992px and above)
         if (window.innerWidth >= 992) {
             // Set modal values to current state
-            guestsCountElement.textContent = guestState.guests;
-            infantsCountElement.textContent = guestState.infants;
-            petsCountElement.textContent = guestState.pets;
+            if (guestsCountElement) guestsCountElement.textContent = guestState.guests;
+            if (infantsCountElement) infantsCountElement.textContent = guestState.infants;
+            if (petsCountElement) petsCountElement.textContent = guestState.pets;
             updateCounterButtons();
             
             guestModal.classList.add('active');
@@ -480,25 +496,29 @@ function initializeGuestModal() {
     });
     
     // Close modal
-    closeGuestModal.addEventListener('click', () => {
-        guestModal.classList.remove('active');
-        document.body.style.overflow = '';
-    });
+    if (closeGuestModal) {
+        closeGuestModal.addEventListener('click', () => {
+            guestModal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
     
     // Apply changes
-    applyGuestChangesBtn.addEventListener('click', () => {
-        // Update guest state from modal
-        guestState.guests = parseInt(guestsCountElement.textContent);
-        guestState.infants = parseInt(infantsCountElement.textContent);
-        guestState.pets = parseInt(petsCountElement.textContent);
-        
-        // Update display
-        updateGuestDisplay();
-        
-        // Close modal
-        guestModal.classList.remove('active');
-        document.body.style.overflow = '';
-    });
+    if (applyGuestChangesBtn) {
+        applyGuestChangesBtn.addEventListener('click', () => {
+            // Update guest state from modal
+            guestState.guests = parseInt(guestsCountElement.textContent);
+            guestState.infants = parseInt(infantsCountElement.textContent);
+            guestState.pets = parseInt(petsCountElement.textContent);
+            
+            // Update display (but NOT pricing - pricing is based only on nights)
+            updateGuestDisplay();
+            
+            // Close modal
+            guestModal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
     
     // Close modal when clicking outside
     guestModal.addEventListener('click', (e) => {
@@ -519,6 +539,8 @@ function initializeGuestModal() {
 
 // Check availability button
 function initializeCheckAvailability() {
+    if (!checkAvailabilityBtn) return;
+    
     checkAvailabilityBtn.addEventListener('click', () => {
         if (!selectedDates.checkIn || !selectedDates.checkOut) {
             alert('Please select check-in and check-out dates');
@@ -531,12 +553,16 @@ function initializeCheckAvailability() {
         }
         
         // Simulate checking availability
-        availabilityText.textContent = 'Checking availability...';
-        availabilityText.style.color = 'orange';
+        if (availabilityText) {
+            availabilityText.textContent = 'Checking availability...';
+            availabilityText.style.color = 'orange';
+        }
         
         setTimeout(() => {
-            availabilityText.textContent = 'Dates selected are available';
-            availabilityText.style.color = 'green';
+            if (availabilityText) {
+                availabilityText.textContent = 'Dates selected are available';
+                availabilityText.style.color = 'green';
+            }
             alert('The selected dates are available! You will now be redirected to Booking.com.');
             
             // In a real app, this would redirect to Booking.com
@@ -552,30 +578,30 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleBtn.addEventListener('click', toggleDescription);
     }
     
-    // Initialize booking functionality
-    initializeDatePickers();
-    initializeGuestCounter();
-    initializeGuestModal();
-    initializeCheckAvailability();
-    
-    // Set initial price display
-    updatePricing();
-    updateGuestDisplay();
-    
-    // Disable guest selector on mobile/tablet
-    if (window.innerWidth < 992) {
-        guestSelector.style.pointerEvents = 'none';
-        guestSelector.style.opacity = '0.7';
+    // Initialize booking functionality only on desktop
+    if (window.innerWidth >= 992) {
+        initializeDatePickers();
+        initializeGuestCounter();
+        initializeGuestModal();
+        initializeCheckAvailability();
+        
+        // Set initial price display
+        updateGuestDisplay();
+        updatePricing();
     }
     
     // Update on window resize
     window.addEventListener('resize', () => {
-        if (window.innerWidth < 992) {
-            guestSelector.style.pointerEvents = 'none';
-            guestSelector.style.opacity = '0.7';
-        } else {
-            guestSelector.style.pointerEvents = 'auto';
-            guestSelector.style.opacity = '1';
+        // If resizing to desktop, initialize booking functionality
+        if (window.innerWidth >= 992) {
+            if (!window.checkInPicker) {
+                initializeDatePickers();
+                initializeGuestCounter();
+                initializeGuestModal();
+                initializeCheckAvailability();
+                updateGuestDisplay();
+                updatePricing();
+            }
         }
     });
 });
@@ -583,4 +609,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // For debugging
 console.log('Booking system initialized');
 console.log('Price per night: $' + PRICE_PER_NIGHT);
+console.log('IMPORTANT: Price calculation is based ONLY on number of nights');
+console.log('Guest/Infant/Pet counts do NOT affect pricing');
+console.log('Example: 1 night = $2026, 2 nights = $4052, 3 nights = $6078');
+console.log('Guest limits: Guests (min 1, no max), Infants (min 0, no max), Pets (min 0, no max)');
 console.log('Today: ' + TODAY.toDateString());
