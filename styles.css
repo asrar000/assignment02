@@ -1194,9 +1194,9 @@ MOBILE-448px */
         gap: 20px;
     }
     
+    /* Hide booking sidebar on mobile */
     .booking-sidebar {
-        width: 100%;
-        position: static;
+        display: none;
     }
     
     .property-header__meta {
@@ -1257,12 +1257,6 @@ MOBILE-448px */
     .gallery-modal__nav--next {
         right: 5px;
     }
-    
-    /* Disable guest selector on mobile */
-    .booking-card__guests {
-        pointer-events: none;
-        opacity: 0.7;
-    }
 }
 
 /* 
@@ -1277,9 +1271,9 @@ Tablet-449px to 991px */
         gap: 30px;
     }
     
+    /* Hide booking sidebar on tablet */
     .booking-sidebar {
-        width: 100%;
-        position: static;
+        display: none;
     }
     
     .content-container {
@@ -1307,12 +1301,6 @@ Tablet-449px to 991px */
     .mobile-gallery-slider {
         display: none;
     }
-    
-    /* Disable guest selector on tablet */
-    .booking-card__guests {
-        pointer-events: none;
-        opacity: 0.7;
-    }
 }
 
 /*
@@ -1324,6 +1312,11 @@ Desktop-992px to above */
     
     .content-wrapper {
         flex-direction: row;
+    }
+    
+    /* Show booking sidebar on desktop */
+    .booking-sidebar {
+        display: block;
     }
     
     .content-container {
