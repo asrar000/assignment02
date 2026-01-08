@@ -7,6 +7,8 @@
     <meta name="description" content="Book Shoreline Towers 1021, a stunning Gulf-front 3-bedroom condo in Destin, Florida with panoramic ocean views, resort amenities, and modern comforts.">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <header class="site-header">
@@ -134,10 +136,22 @@
                     <div class="main-content-section">
                         <section class="property-description">
                             <h2 class="property-description__title">Beachfront Comfort with Breathtaking Gulf Views</h2>
-                            <p class="property-discription__text">
-                                Welcome to Shoreline Towers 1021, a stunning Destin vacation rental that blends coastal charm with modern comfort right on Florida's Emerald Coast. This 3-bedroom, 2-bath gulf-front condo sits just steps from the sand, offering guests the kind of relaxing, effortless stay that makes Destin famous.
-                            </p>
-                            <button class="property-description__show-more">SHOW MORE</button>
+                            <div class="property-description__content">
+                                <div class="property-description__text property-description__text--collapsed">
+                                    <p>Welcome to Shoreline Towers 1021, a stunning Destin vacation rental that blends coastal charm with modern comfort right on Florida's Emerald Coast. This 3-bedroom, 2-bath gulf-front condo sits just steps from the sand, offering guests the kind of relaxing, effortless stay that makes Destin famous.</p>
+                                    <p>Enjoy panoramic views of the Gulf of Mexico from your private balcony, where you can watch dolphins play at sunrise and enjoy spectacular sunsets each evening. The condo features an open-concept living area with floor-to-ceiling windows, allowing natural light to flood the space and highlight the beautiful coastal decor.</p>
+                                    <p>The master suite boasts a king-size bed, en-suite bathroom with walk-in shower, and direct balcony access. Two additional guest bedrooms offer comfortable queen beds and share a second full bathroom. The fully equipped kitchen includes stainless steel appliances, granite countertops, and everything you need to prepare meals.</p>
+                                    <p>As a guest at Shoreline Towers, you'll have access to resort amenities including two swimming pools (one heated), a fitness center, tennis courts, and private beach access with complimentary chairs and umbrellas. The building also features secure underground parking and 24-hour concierge service.</p>
+                                    <p>Located in the heart of Destin, you're just minutes from world-class dining, shopping at Destin Commons, golf courses, deep-sea fishing charters, and family attractions like Big Kahuna's Water Park. Whether you're seeking a romantic getaway or a family vacation, Shoreline Towers 1021 offers the perfect home base for your Florida escape.</p>
+                                    <p class="owner-direct-note">
+                                        <strong>Since 1994, OwnerDirect has helped travelers find quality vacation rentals with confidence through a simple and secure booking experience.</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <button class="property-description__toggle-btn">
+                                <span class="property-description__toggle-text">SHOW MORE</span>
+                                <i class="fas fa-chevron-down property-description__toggle-icon"></i>
+                            </button>
                         </section>
 
                         <section class="map-section">
@@ -175,41 +189,52 @@
                     <div class="booking-card">
                         <div class="booking-card__price">
                             <span class="booking-card__currency">USD</span>
-                            <span class="booking-card__amount">$600</span>
+                            <span class="booking-card__amount" id="totalPrice">$2026</span>
                         </div>
                         
                         <div class="booking-card__dates">
                             <div class="booking-card__date-group">
                                 <span class="booking-card__date-label">CHECK IN</span>
-                                <span class="booking-card__date-value">19 FEB 2026</span>
+                                <div class="booking-card__date-input-container">
+                                    <input type="text" id="checkInDate" class="booking-card__date-input" placeholder="Select date" readonly>
+                                    <i class="fas fa-calendar-alt booking-card__date-icon"></i>
+                                </div>
                             </div>
                             <div class="booking-card__date-group">
                                 <span class="booking-card__date-label">CHECK OUT</span>
-                                <span class="booking-card__date-value">21 FEB 2026</span>
+                                <div class="booking-card__date-input-container">
+                                    <input type="text" id="checkOutDate" class="booking-card__date-input" placeholder="Select date" readonly>
+                                    <i class="fas fa-calendar-alt booking-card__date-icon"></i>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="booking-card__guests">
+                        <div class="booking-card__guests" id="guestSelector">
                             <span class="booking-card__guests-label">GUESTS</span>
-                            <span class="booking-card__guests-value">3 Guests, 1 Infant, 1 Pet</span>
+                            <span class="booking-card__guests-value" id="guestDisplay">1 Guest</span>
+                            <i class="fas fa-chevron-down booking-card__guests-icon"></i>
                         </div>
                         
                         <div class="booking-card__availability">
-                            <span class="booking-card__availability-text">Dates selected are available</span>
+                            <span class="booking-card__availability-text" id="availabilityText">Select dates to check availability</span>
                         </div>
                         
                         <div class="booking-card__pricing">
                             <div class="booking-card__price-row">
                                 <span>PRICE PER NIGHT</span>
-                                <span>USD $600</span>
+                                <span id="pricePerNight">USD $2026</span>
+                            </div>
+                            <div class="booking-card__price-row">
+                                <span>NIGHTS</span>
+                                <span id="nightsCount">0 nights</span>
                             </div>
                             <div class="booking-card__price-row booking-card__price-row--total">
                                 <span>TOTAL PRICE</span>
-                                <span>USD $600</span>
+                                <span id="calculatedTotal">USD $2026</span>
                             </div>
                         </div>
                         
-                        <button class="booking-card__check-btn">CHECK AVAILABILITY</button>
+                        <button class="booking-card__check-btn" id="checkAvailabilityBtn">CHECK AVAILABILITY</button>
                         
                         <div class="booking-card__redirect">
                             <p>You will be redirected to <strong>Booking.com</strong></p>
@@ -230,6 +255,74 @@
             </div>
         </div>
     </main>
+    
+    <!-- Guest Selection Modal -->
+    <div class="guest-modal" id="guestModal">
+        <div class="guest-modal__content">
+            <div class="guest-modal__header">
+                <h3 class="guest-modal__title">Guests</h3>
+                <button class="guest-modal__close" id="closeGuestModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="guest-modal__body">
+                <div class="guest-modal__section">
+                    <div class="guest-modal__item">
+                        <div class="guest-modal__item-info">
+                            <h4 class="guest-modal__item-title">Guests</h4>
+                            <p class="guest-modal__item-description">Ages 13 or above</p>
+                        </div>
+                        <div class="guest-modal__counter">
+                            <button class="guest-modal__counter-btn" id="decreaseGuests" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="guest-modal__counter-value" id="guestsCount">1</span>
+                            <button class="guest-modal__counter-btn" id="increaseGuests">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="guest-modal__item">
+                        <div class="guest-modal__item-info">
+                            <h4 class="guest-modal__item-title">Infants</h4>
+                            <p class="guest-modal__item-description">Under 2 years old</p>
+                        </div>
+                        <div class="guest-modal__counter">
+                            <button class="guest-modal__counter-btn" id="decreaseInfants" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="guest-modal__counter-value" id="infantsCount">0</span>
+                            <button class="guest-modal__counter-btn" id="increaseInfants">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="guest-modal__item">
+                        <div class="guest-modal__item-info">
+                            <h4 class="guest-modal__item-title">Pets</h4>
+                            <p class="guest-modal__item-description">Dogs and cats only</p>
+                        </div>
+                        <div class="guest-modal__counter">
+                            <button class="guest-modal__counter-btn" id="decreasePets" disabled>
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="guest-modal__counter-value" id="petsCount">0</span>
+                            <button class="guest-modal__counter-btn" id="increasePets">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guest-modal__footer">
+                    <button class="guest-modal__apply-btn" id="applyGuestChanges">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <section class="reviews-section">
         <div class="container">
@@ -308,110 +401,112 @@
             
             <div class="reviews-section__pagination">
                 <span class="reviews-section__pagination-dot reviews-section__pagination-dot--active"></span>
-                                <span class="reviews-section__pagination-dot"></span>
-                                <span class="reviews-section__pagination-dot"></span>
-                            </div>
-                        </div>
+                <span class="reviews-section__pagination-dot"></span>
+                <span class="reviews-section__pagination-dot"></span>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <div class="site-footer__content">
+                <div class="site-footer__links">
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Hotels</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Azure Grand Hotel</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Horizon View Boutique</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Seaside Plaza Inn</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Urban Retreat</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Alpine Crest Hotel</a></li>
+                        </ul>
                     </section>
                     
-                    <footer class="site-footer">
-                        <div class="container">
-                            <div class="site-footer__content">
-                                <div class="site-footer__links">
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Hotels</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Azure Grand Hotel</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Horizon View Boutique</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Seaside Plaza Inn</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Urban Retreat</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Alpine Crest Hotel</a></li>
-                                        </ul>
-                                    </section>
-                                    
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Villas</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Villa Solara</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Casa Del Mare</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Villa Toscana</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Palm Haven</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Serenity Hill Villa</a></li>
-                                        </ul>
-                                    </section>
-                                    
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Beach Houses</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Driftwood Sands House</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Ocean Pearl Retreat</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Blue Horizon Cottage</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Coastal Haven</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Sea Whisper Beach House</a></li>
-                                        </ul>
-                                    </section>
-                                    
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Cabins</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Whispering Pines Cabin</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Timber Trail Lodge</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Cozy Cedar</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Mountain Mist Retreat</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Wildwood Ridge Cabin</a></li>
-                                        </ul>
-                                    </section>
-                                    
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Apartments</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Skyline View Suites</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">MetroStay Apartments</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The CityLight Loft</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">HarbourPoint Residences</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Central Avenue Flats</a></li>
-                                        </ul>
-                                    </section>
-                                    
-                                    <section class="footer-category">
-                                        <h3 class="footer-category__title">Resorts</h3>
-                                        <ul class="footer-category__list">
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Coral Bay Resort</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Sunset Grove Retreat</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Silver Lagoon Resort</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Haven at Hillside</a></li>
-                                            <li class="footer-category__item"><a href="#" class="footer-category__link">Golden Palm Resort</a></li>
-                                        </ul>
-                                    </section>
-                                </div>
-                                
-                                <div class="site-footer__bottom">
-                                    <section class="site-footer__info">
-                                        <h3 class="site-footer__info-title">Discover handpicked hotels, villas, and vacation homes from around the world.</h3>
-                                        <p class="site-footer__info-text">Owner Direct Vacation Rentals helps travelers discover verified vacation homes, cabins, beach houses, and holiday rentals from trusted sources around the world. Established in 1994, we're committed to helping you find the right place to stay—securely, easily, and confidently.</p>
-                                    </section>
-                                    
-                                    <section class="site-footer__legal">
-                                        <div class="site-footer__legal-links">
-                                            <a href="#" class="site-footer__legal-link">Privacy policy</a>
-                                            <a href="#" class="site-footer__legal-link">terms</a>
-                                            <a href="#" class="site-footer__legal-link">sitemap</a>
-                                        </div>
-                                        
-                                        <div class="site-footer__copyright">
-                                            <span class="site-footer__copyright-logo">OwnerDirect</span>
-                                            <span class="site-footer__copyright-powered">Powered by TravelAi</span>
-                                            <button class="site-footer__list-btn">List Your Property</button>
-                                            <button class="site-footer__find-btn">find your stay</button>
-                                        </div>
-                                        
-                                        <div class="site-footer__copyright-text">© 2025 ownerDirect. All Rights Reserved</div>
-                                    </section>
-                                </div>
-                            </div>
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Villas</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Villa Solara</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Casa Del Mare</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Villa Toscana</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Palm Haven</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Serenity Hill Villa</a></li>
+                        </ul>
+                    </section>
+                    
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Beach Houses</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Driftwood Sands House</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Ocean Pearl Retreat</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Blue Horizon Cottage</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Coastal Haven</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Sea Whisper Beach House</a></li>
+                        </ul>
+                    </section>
+                    
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Cabins</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Whispering Pines Cabin</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Timber Trail Lodge</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Cozy Cedar</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Mountain Mist Retreat</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Wildwood Ridge Cabin</a></li>
+                        </ul>
+                    </section>
+                    
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Apartments</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Skyline View Suites</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">MetroStay Apartments</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The CityLight Loft</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">HarbourPoint Residences</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Central Avenue Flats</a></li>
+                        </ul>
+                    </section>
+                    
+                    <section class="footer-category">
+                        <h3 class="footer-category__title">Resorts</h3>
+                        <ul class="footer-category__list">
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Coral Bay Resort</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Sunset Grove Retreat</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Silver Lagoon Resort</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">The Haven at Hillside</a></li>
+                            <li class="footer-category__item"><a href="#" class="footer-category__link">Golden Palm Resort</a></li>
+                        </ul>
+                    </section>
+                </div>
+                
+                <div class="site-footer__bottom">
+                    <section class="site-footer__info">
+                        <h3 class="site-footer__info-title">Discover handpicked hotels, villas, and vacation homes from around the world.</h3>
+                        <p class="site-footer__info-text">Owner Direct Vacation Rentals helps travelers discover verified vacation homes, cabins, beach houses, and holiday rentals from trusted sources around the world. Established in 1994, we're committed to helping you find the right place to stay—securely, easily, and confidently.</p>
+                    </section>
+                    
+                    <section class="site-footer__legal">
+                        <div class="site-footer__legal-links">
+                            <a href="#" class="site-footer__legal-link">Privacy policy</a>
+                            <a href="#" class="site-footer__legal-link">terms</a>
+                            <a href="#" class="site-footer__legal-link">sitemap</a>
                         </div>
-                    </footer>
+                        
+                        <div class="site-footer__copyright">
+                            <span class="site-footer__copyright-logo">OwnerDirect</span>
+                            <span class="site-footer__copyright-powered">Powered by TravelAi</span>
+                            <button class="site-footer__list-btn">List Your Property</button>
+                            <button class="site-footer__find-btn">find your stay</button>
+                        </div>
+                        
+                        <div class="site-footer__copyright-text">© 2025 ownerDirect. All Rights Reserved</div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-                    <script src="script.js"></script>
-                </body>
-                </html>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html>
