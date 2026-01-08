@@ -888,14 +888,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// For debugging
-console.log('Booking system initialized');
-console.log('Price per night: $' + PRICE_PER_NIGHT);
-console.log('IMPORTANT: Price calculation is based ONLY on number of nights');
-console.log('Guest/Infant/Pet counts do NOT affect pricing');
-console.log('Example: 1 night = $2026, 2 nights = $4052, 3 nights = $6078');
-console.log('Guest limits: Guests (min 1, no max), Infants (min 0, no max), Pets (min 0, no max)');
-console.log('Today: ' + TODAY.toDateString());
-console.log('Favorites system initialized');
-console.log('Current favorites:', getFavorites());
-console.log('Total properties available:', properties.length);
