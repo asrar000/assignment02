@@ -427,9 +427,10 @@ IMAGE GALLERY - FIXED SECTION */
 }
 
 /*
-PROPERTY */
+PROPERTY DESCRIPTION - UPDATED FOR SHOW MORE/LESS */
 .property-description {
     margin-bottom: 40px;
+    position: relative;
 }
 
 .property-description__title {
@@ -438,19 +439,81 @@ PROPERTY */
     color: #333;
 }
 
+.property-description__content {
+    position: relative;
+    overflow: hidden;
+}
+
 .property-description__text {
     color: #666;
     line-height: 1.6;
+}
+
+.property-description__text p {
     margin-bottom: 15px;
 }
 
-.property-description__show-more {
+.property-description__text--collapsed {
+    max-height: 150px; /* Show only 3 lines of text when collapsed */
+    overflow: hidden;
+    position: relative;
+}
+
+.property-description__text--collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
+    pointer-events: none;
+}
+
+.property-description__text--expanded {
+    max-height: none;
+}
+
+.property-description__text--expanded::after {
+    display: none;
+}
+
+.owner-direct-note {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    font-style: italic;
+}
+
+.owner-direct-note strong {
+    color: #333;
+}
+
+.property-description__toggle-btn {
     background: none;
     border: none;
     color: blue;
     cursor: pointer;
     font-size: 14px;
-    padding: 0;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.property-description__toggle-btn:hover {
+    color: darkblue;
+}
+
+.property-description__toggle-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.property-description__toggle-btn.expanded .property-description__toggle-icon {
+    transform: rotate(180deg);
 }
 
 /* 
@@ -557,17 +620,47 @@ BOOKING CARD */
     margin-bottom: 5px;
 }
 
-.booking-card__date-value {
-    display: block;
+/* Booking Card Date Inputs */
+.booking-card__date-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.booking-card__date-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 14px;
-    font-weight: bold;
-    color: #333;
+    background-color: white;
+    cursor: pointer;
+    padding-right: 35px;
+}
+
+.booking-card__date-input:focus {
+    outline: none;
+    border-color: blue;
+}
+
+.booking-card__date-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
 }
 
 .booking-card__guests {
+    position: relative;
+    cursor: pointer;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     margin-bottom: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
+    background-color: white;
 }
 
 .booking-card__guests-label {
@@ -581,6 +674,15 @@ BOOKING CARD */
     display: block;
     font-size: 14px;
     color: #333;
+}
+
+.booking-card__guests-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 12px;
 }
 
 .booking-card__availability {
@@ -657,6 +759,217 @@ BOOKING CARD */
 
 .booking-card__note-icon {
     color: orange;
+}
+
+/* Guest Modal */
+.guest-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.guest-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.guest-modal__content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.guest-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.guest-modal__title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.guest-modal__close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.guest-modal__close:hover {
+    background-color: #f5f5f5;
+}
+
+.guest-modal__body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.guest-modal__section {
+    margin-bottom: 20px;
+}
+
+.guest-modal__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.guest-modal__item:last-child {
+    border-bottom: none;
+}
+
+.guest-modal__item-info {
+    flex: 1;
+}
+
+.guest-modal__item-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.guest-modal__item-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.guest-modal__counter {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.guest-modal__counter-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.guest-modal__counter-btn:hover:not(:disabled) {
+    border-color: blue;
+    color: blue;
+}
+
+.guest-modal__counter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+.guest-modal__counter-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    min-width: 24px;
+    text-align: center;
+}
+
+.guest-modal__footer {
+    padding: 20px 0 0;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+.guest-modal__apply-btn {
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.guest-modal__apply-btn:hover {
+    background-color: darkblue;
+}
+
+/* Flatpickr Customization */
+.flatpickr-calendar {
+    font-family: Arial, sans-serif;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+    background: blue;
+    border-color: blue;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(0, 0, 255, 0.1);
+    border-color: rgba(0, 0, 255, 0.1);
+}
+
+.flatpickr-day.today {
+    border-color: blue;
+}
+
+.flatpickr-day.today:hover {
+    background: blue;
+    border-color: blue;
+    color: white;
+}
+
+.flatpickr-day.disabled, .flatpickr-day.disabled:hover {
+    color: #ccc;
+    cursor: not-allowed;
 }
 
 /* 
@@ -944,6 +1257,12 @@ MOBILE-448px */
     .gallery-modal__nav--next {
         right: 5px;
     }
+    
+    /* Disable guest selector on mobile */
+    .booking-card__guests {
+        pointer-events: none;
+        opacity: 0.7;
+    }
 }
 
 /* 
@@ -987,6 +1306,12 @@ Tablet-449px to 991px */
 
     .mobile-gallery-slider {
         display: none;
+    }
+    
+    /* Disable guest selector on tablet */
+    .booking-card__guests {
+        pointer-events: none;
+        opacity: 0.7;
     }
 }
 
