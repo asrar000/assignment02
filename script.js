@@ -1,441 +1,173 @@
-// Gallery images data
+// Gallery images array
 const galleryImages = [
-    {
-        src: "assets/gallery_images/image1.jpg",
-        alt: "Main view of Shoreline Towers 1021 living room with Gulf views"
-    },
-    {
-        src: "assets/gallery_images/image2.jpg",
-        alt: "Master bedroom with comfortable bedding and decor"
-    },
-    {
-        src: "assets/gallery_images/image3.jpg",
-        alt: "Balcony with stunning Gulf view and outdoor seating"
-    },
-    {
-        src: "assets/gallery_images/image4.jpg",
-        alt: "Modern kitchen with stainless steel appliances and island"
-    },
-    {
-        src: "assets/gallery_images/image5.jpg",
-        alt: "Second bedroom with two twin beds and nautical decor"
-    },
-    {
-        src: "assets/gallery_images/image6.jpg",
-        alt: "Third bedroom with king-size bed and ocean view"
-    },
-    {
-        src: "assets/gallery_images/image7.jpg",
-        alt: "Spacious dining area with seating for eight"
-    },
-    {
-        src: "assets/gallery_images/image8.jpg",
-        alt: "Luxurious master bathroom with dual vanity"
-    },
-    {
-        src: "assets/gallery_images/image9.jpg",
-        alt: "Resort swimming pool with lounge chairs"
-    },
-    {
-        src: "assets/gallery_images/image10.jpg",
-        alt: "Beachfront view from the condo balcony at sunset"
-    },
-    {
-        src: "assets/gallery_images/image11.jpg",
-        alt: "Fully equipped laundry room with washer and dryer"
-    },
-    {
-        src: "assets/gallery_images/image12.jpg",
-        alt: "Resort fitness center with modern equipment"
-    }
+    'assets/image1.jpg',
+    'assets/image2.jpg',
+    'assets/image3.jpg',
+    'assets/image4.jpg',
+    'assets/image5.jpg',
+    'assets/image6.jpg',
+    'assets/image7.jpg',
+    'assets/image8.jpg',
+    'assets/image9.jpg',
+    'assets/image10.jpg'
 ];
 
-// DOM Elements
-const galleryModal = document.getElementById('galleryModal');
-const viewAllImagesBtn = document.getElementById('viewAllImagesBtn');
-const closeGalleryModalBtn = document.getElementById('closeGalleryModal');
-const modalImage = document.getElementById('modalImage');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const thumbnailsContainer = document.querySelector('.gallery-modal__thumbnails');
-const currentImageIndexElement = document.getElementById('currentImageIndex');
-const totalImagesElement = document.getElementById('totalImages');
+let currentImageIndex = 0;
 
-// Mobile Gallery Elements
-const mobileGallerySlider = document.getElementById('mobileGallerySlider');
-const closeMobileGalleryBtn = document.getElementById('closeMobileGallery');
-const mobilePrevBtn = document.getElementById('mobilePrevBtn');
-const mobileNextBtn = document.getElementById('mobileNextBtn');
-const mobileGalleryImagesContainer = document.querySelector('.mobile-gallery-slider__images');
-const mobileGalleryDotsContainer = document.querySelector('.mobile-gallery-slider__dots');
-const currentMobileImageElement = document.getElementById('currentMobileImage');
-const totalMobileImagesElement = document.getElementById('totalMobileImages');
+// Mobile Slider Functionality
+const sliderTrack = document.getElementById('sliderTrack');
+const sliderDots = document.getElementById('sliderDots');
+const mobileSlider = document.getElementById('mobileSlider');
 
-// Inline Mobile Slider Elements
-const mobileSlidesContainer = document.querySelector('.mobile-image-gallery__slides');
-const mobileSlides = document.querySelectorAll('.mobile-image-gallery__slide');
-const mobileDots = document.querySelectorAll('.mobile-image-gallery__dot');
-
-// Variables
-let currentImageIndex = 0; // For desktop gallery
-let currentMobileImageIndex = 0; // For mobile full gallery
-let currentInlineSlideIndex = 0; // For inline mobile slider
-const DOTS_PER_SET = 6; // Show 6 dots at a time
-
-// Initialize all galleries
-function initGalleries() {
-    // Desktop Gallery
-    totalImagesElement.textContent = galleryImages.length;
-    generateDesktopThumbnails();
-    setupDesktopGalleryEventListeners();
-    updateDesktopGallery();
-    
-    // Mobile Full Gallery
-    totalMobileImagesElement.textContent = galleryImages.length;
-    generateMobileGalleryImages();
-    generateMobileGalleryDots();
-    setupMobileGalleryEventListeners();
-    updateMobileGallery();
-    
-    // Inline Mobile Slider
-    setupInlineMobileSlider();
-}
-
-// ========== DESKTOP GALLERY FUNCTIONS ==========
-
-function generateDesktopThumbnails() {
-    thumbnailsContainer.innerHTML = '';
-    
-    galleryImages.forEach((image, index) => {
-        const thumbnail = document.createElement('img');
-        thumbnail.src = image.src;
-        thumbnail.alt = image.alt;
-        thumbnail.classList.add('gallery-modal__thumbnail');
-        
-        if (index === currentImageIndex) {
-            thumbnail.classList.add('gallery-modal__thumbnail--active');
-        }
-        
-        thumbnail.addEventListener('click', () => {
-            setCurrentDesktopImage(index);
-        });
-        
-        thumbnailsContainer.appendChild(thumbnail);
-    });
-}
-
-function setCurrentDesktopImage(index) {
-    currentImageIndex = index;
-    updateDesktopGallery();
-}
-
-function updateDesktopGallery() {
-    modalImage.src = galleryImages[currentImageIndex].src;
-    modalImage.alt = galleryImages[currentImageIndex].alt;
-    currentImageIndexElement.textContent = currentImageIndex + 1;
-    
-    // Update thumbnails
-    const thumbnails = document.querySelectorAll('.gallery-modal__thumbnail');
-    thumbnails.forEach((thumbnail, index) => {
-        if (index === currentImageIndex) {
-            thumbnail.classList.add('gallery-modal__thumbnail--active');
-        } else {
-            thumbnail.classList.remove('gallery-modal__thumbnail--active');
-        }
-    });
-    
-    // Update navigation buttons
-    prevBtn.disabled = currentImageIndex === 0;
-    nextBtn.disabled = currentImageIndex === galleryImages.length - 1;
-}
-
-function openDesktopGalleryModal(startIndex = 0) {
-    setCurrentDesktopImage(startIndex);
-    galleryModal.classList.add('gallery-modal--open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDesktopGalleryModal() {
-    galleryModal.classList.remove('gallery-modal--open');
-    document.body.style.overflow = 'auto';
-}
-
-function goToPreviousDesktopImage() {
-    if (currentImageIndex > 0) {
-        setCurrentDesktopImage(currentImageIndex - 1);
-    }
-}
-
-function goToNextDesktopImage() {
-    if (currentImageIndex < galleryImages.length - 1) {
-        setCurrentDesktopImage(currentImageIndex + 1);
-    }
-}
-
-function setupDesktopGalleryEventListeners() {
-    // Desktop gallery button
-    if (viewAllImagesBtn) {
-        viewAllImagesBtn.addEventListener('click', () => openDesktopGalleryModal(0));
-    }
-    
-    // Close modal
-    closeGalleryModalBtn.addEventListener('click', closeDesktopGalleryModal);
-    
-    // Close modal when clicking outside
-    galleryModal.addEventListener('click', (event) => {
-        if (event.target === galleryModal) {
-            closeDesktopGalleryModal();
-        }
-    });
-    
-    // Navigation buttons
-    prevBtn.addEventListener('click', goToPreviousDesktopImage);
-    nextBtn.addEventListener('click', goToNextDesktopImage);
-    
-    // Keyboard navigation for desktop gallery
-    document.addEventListener('keydown', handleDesktopKeyboardNavigation);
-}
-
-function handleDesktopKeyboardNavigation(event) {
-    if (galleryModal.classList.contains('gallery-modal--open')) {
-        if (event.key === 'Escape') {
-            closeDesktopGalleryModal();
-        } else if (event.key === 'ArrowLeft') {
-            goToPreviousDesktopImage();
-        } else if (event.key === 'ArrowRight') {
-            goToNextDesktopImage();
-        }
-    }
-}
-
-// ========== MOBILE FULL GALLERY FUNCTIONS ==========
-
-function generateMobileGalleryImages() {
-    mobileGalleryImagesContainer.innerHTML = '';
-    
-    galleryImages.forEach((image, index) => {
-        const imageContainer = document.createElement('div');
-        imageContainer.classList.add('mobile-gallery-slider__image-container');
-        
-        const img = document.createElement('img');
-        img.src = image.src;
-        img.alt = image.alt;
-        img.classList.add('mobile-gallery-slider__image');
-        
-        imageContainer.appendChild(img);
-        mobileGalleryImagesContainer.appendChild(imageContainer);
-    });
-}
-
-function generateMobileGalleryDots() {
-    mobileGalleryDotsContainer.innerHTML = '';
-    
-    // Create dots for all images
+// Create dots for mobile slider
+function createSliderDots() {
+    sliderDots.innerHTML = '';
     galleryImages.forEach((_, index) => {
         const dot = document.createElement('span');
-        dot.classList.add('mobile-gallery-slider__dot');
-        
-        dot.addEventListener('click', () => {
-            setCurrentMobileImage(index);
-        });
-        
-        mobileGalleryDotsContainer.appendChild(dot);
+        dot.className = 'mobile-gallery-slider__dot';
+        if (index === 0) {
+            dot.classList.add('mobile-gallery-slider__dot--active');
+        }
+        dot.addEventListener('click', () => goToSlide(index));
+        sliderDots.appendChild(dot);
     });
-    
-    updateMobileGalleryDots();
 }
 
-function updateMobileGalleryDots() {
-    const allDots = document.querySelectorAll('.mobile-gallery-slider__dot');
-    
-    // Calculate which set of 6 dots to show
-    const currentSet = Math.floor(currentMobileImageIndex / DOTS_PER_SET);
-    const startIndex = currentSet * DOTS_PER_SET;
-    const endIndex = Math.min(startIndex + DOTS_PER_SET, galleryImages.length);
-    
-    // Hide all dots
-    allDots.forEach(dot => {
-        dot.style.display = 'none';
-    });
-    
-    // Show current set of dots
-    for (let i = startIndex; i < endIndex; i++) {
-        if (allDots[i]) {
-            allDots[i].style.display = 'block';
-        }
-    }
-    
-    // Update active dot
-    allDots.forEach((dot, index) => {
-        if (index === currentMobileImageIndex) {
-            dot.classList.add('active');
+function goToSlide(index) {
+    currentImageIndex = index;
+    sliderTrack.style.transform = `translateX(-${index * 100}%)`;
+    updateSliderDots();
+}
+
+function updateSliderDots() {
+    const dots = document.querySelectorAll('.mobile-gallery-slider__dot');
+    dots.forEach((dot, index) => {
+        if (index === currentImageIndex) {
+            dot.classList.add('mobile-gallery-slider__dot--active');
         } else {
-            dot.classList.remove('active');
-        }
-    });
-    
-    // Adjust dots container position to show current set
-    const dotWidth = 6 + 6; // width + gap
-    const offset = -(startIndex * dotWidth);
-    mobileGalleryDotsContainer.style.marginLeft = offset + 'px';
-}
-
-function setCurrentMobileImage(index) {
-    currentMobileImageIndex = index;
-    updateMobileGallery();
-}
-
-function updateMobileGallery() {
-    // Update image position
-    const imageContainers = document.querySelectorAll('.mobile-gallery-slider__image-container');
-    const containerWidth = 100; // 100% per image
-    
-    // Move the images container
-    mobileGalleryImagesContainer.style.marginLeft = `-${currentMobileImageIndex * containerWidth}%`;
-    
-    // Update counter
-    currentMobileImageElement.textContent = currentMobileImageIndex + 1;
-    
-    // Update dots
-    updateMobileGalleryDots();
-    
-    // Update navigation buttons
-    mobilePrevBtn.disabled = currentMobileImageIndex === 0;
-    mobileNextBtn.disabled = currentMobileImageIndex === galleryImages.length - 1;
-}
-
-function openMobileGallery() {
-    mobileGallerySlider.classList.add('mobile-gallery-slider--open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMobileGallery() {
-    mobileGallerySlider.classList.remove('mobile-gallery-slider--open');
-    document.body.style.overflow = 'auto';
-}
-
-function goToPreviousMobileImage() {
-    if (currentMobileImageIndex > 0) {
-        setCurrentMobileImage(currentMobileImageIndex - 1);
-    }
-}
-
-function goToNextMobileImage() {
-    if (currentMobileImageIndex < galleryImages.length - 1) {
-        setCurrentMobileImage(currentMobileImageIndex + 1);
-    }
-}
-
-function setupMobileGalleryEventListeners() {
-    // Open mobile gallery when clicking on inline mobile slider images
-    mobileSlides.forEach((slide, index) => {
-        slide.addEventListener('click', () => {
-            setCurrentMobileImage(index);
-            openMobileGallery();
-        });
-    });
-    
-    // Also open when clicking on dots in inline slider
-    mobileDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            setCurrentMobileImage(index);
-            openMobileGallery();
-        });
-    });
-    
-    // Close mobile gallery
-    closeMobileGalleryBtn.addEventListener('click', closeMobileGallery);
-    
-    // Close mobile gallery when clicking outside
-    mobileGallerySlider.addEventListener('click', (event) => {
-        if (event.target === mobileGallerySlider) {
-            closeMobileGallery();
-        }
-    });
-    
-    // Mobile gallery navigation
-    mobilePrevBtn.addEventListener('click', goToPreviousMobileImage);
-    mobileNextBtn.addEventListener('click', goToNextMobileImage);
-    
-    // Keyboard navigation for mobile gallery
-    document.addEventListener('keydown', handleMobileKeyboardNavigation);
-}
-
-function handleMobileKeyboardNavigation(event) {
-    if (mobileGallerySlider.classList.contains('mobile-gallery-slider--open')) {
-        if (event.key === 'Escape') {
-            closeMobileGallery();
-        } else if (event.key === 'ArrowLeft') {
-            goToPreviousMobileImage();
-        } else if (event.key === 'ArrowRight') {
-            goToNextMobileImage();
-        }
-    }
-}
-
-// ========== INLINE MOBILE SLIDER FUNCTIONS ==========
-
-function setupInlineMobileSlider() {
-    // Add click events to dots
-    mobileDots.forEach(dot => {
-        dot.addEventListener('click', () => {
-            const slideIndex = parseInt(dot.getAttribute('data-slide'));
-            setCurrentInlineSlide(slideIndex);
-        });
-    });
-    
-    // Auto-advance slides every 5 seconds
-    setInterval(() => {
-        const nextSlideIndex = (currentInlineSlideIndex + 1) % mobileSlides.length;
-        setCurrentInlineSlide(nextSlideIndex);
-    }, 5000);
-    
-    // Add touch events for swiping
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    mobileSlidesContainer.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-    
-    mobileSlidesContainer.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-}
-
-function setCurrentInlineSlide(index) {
-    currentInlineSlideIndex = index;
-    
-    // Update slides position
-    mobileSlidesContainer.style.marginLeft = `-${index * 100}%`;
-    
-    // Update dots
-    mobileDots.forEach((dot, dotIndex) => {
-        if (dotIndex === index) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
+            dot.classList.remove('mobile-gallery-slider__dot--active');
         }
     });
 }
+
+// Touch swipe functionality for mobile slider
+let touchStartX = 0;
+let touchEndX = 0;
+
+mobileSlider.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+mobileSlider.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
 
 function handleSwipe() {
-    const swipeThreshold = 50;
-    const diff = touchStartX - touchEndX;
-    
-    if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-            // Swipe left - next slide
-            const nextSlideIndex = (currentInlineSlideIndex + 1) % mobileSlides.length;
-            setCurrentInlineSlide(nextSlideIndex);
-        } else {
-            // Swipe right - previous slide
-            const prevSlideIndex = currentInlineSlideIndex === 0 ? mobileSlides.length - 1 : currentInlineSlideIndex - 1;
-            setCurrentInlineSlide(prevSlideIndex);
+    if (touchEndX < touchStartX - 50) {
+        // Swipe left
+        if (currentImageIndex < galleryImages.length - 1) {
+            goToSlide(currentImageIndex + 1);
+        }
+    }
+    if (touchEndX > touchStartX + 50) {
+        // Swipe right
+        if (currentImageIndex > 0) {
+            goToSlide(currentImageIndex - 1);
         }
     }
 }
 
-// Initialize all galleries when DOM is loaded
-document.addEventListener('DOMContentLoaded', initGalleries);
+// Initialize mobile slider
+createSliderDots();
+
+// Modal Gallery Functionality (Desktop/Tablet)
+const modal = document.getElementById('galleryModal');
+const viewAllBtn = document.getElementById('viewAllBtn');
+const closeModal = document.getElementById('closeModal');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const modalMainImage = document.getElementById('modalMainImage');
+const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+
+let modalCurrentIndex = 0;
+
+// Create thumbnails
+function createThumbnails() {
+    thumbnailsContainer.innerHTML = '';
+    galleryImages.forEach((image, index) => {
+        const img = document.createElement('img');
+        img.src = image;
+        img.alt = `Gallery thumbnail ${index + 1}`;
+        img.className = 'gallery-modal__thumbnail';
+        if (index === 0) {
+            img.classList.add('active');
+        }
+        img.addEventListener('click', () => showImage(index));
+        thumbnailsContainer.appendChild(img);
+    });
+}
+
+function showImage(index) {
+    modalCurrentIndex = index;
+    modalMainImage.src = galleryImages[index];
+    
+    // Update active thumbnail
+    const thumbnails = document.querySelectorAll('.gallery-modal__thumbnail');
+    thumbnails.forEach((thumb, i) => {
+        if (i === index) {
+            thumb.classList.add('active');
+            thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+            thumb.classList.remove('active');
+        }
+    });
+}
+
+function showNextImage() {
+    modalCurrentIndex = (modalCurrentIndex + 1) % galleryImages.length;
+    showImage(modalCurrentIndex);
+}
+
+function showPrevImage() {
+    modalCurrentIndex = (modalCurrentIndex - 1 + galleryImages.length) % galleryImages.length;
+    showImage(modalCurrentIndex);
+}
+
+// Event listeners for modal
+viewAllBtn.addEventListener('click', () => {
+    modal.classList.add('active');
+    createThumbnails();
+    showImage(0);
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+});
+
+closeModal.addEventListener('click', () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+});
+
+nextBtn.addEventListener('click', showNextImage);
+prevBtn.addEventListener('click', showPrevImage);
+
+// Close modal on background click
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') {
+            showNextImage();
+        } else if (e.key === 'ArrowLeft') {
+            showPrevImage();
+        } else if (e.key === 'Escape') {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
